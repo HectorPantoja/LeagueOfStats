@@ -1,0 +1,6 @@
+CREATE TABLE SyncAnchor (
+ Id INTEGER PRIMARY KEY CHECK(Id=1), FirstSuccessUtc TEXT NOT NULL);
+CREATE TABLE SyncState (
+ Flow TEXT PRIMARY KEY, LastAttemptUtc TEXT NULL, LastSuccessUtc TEXT NULL, Summary TEXT NULL);
+CREATE TABLE PatchNotes (
+ Url TEXT PRIMARY KEY, DiscoveredUtc TEXT NOT NULL);

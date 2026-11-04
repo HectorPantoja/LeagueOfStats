@@ -1,0 +1,23 @@
+ALTER TABLE MatchSessions ADD COLUMN Status TEXT NOT NULL DEFAULT 'Legacy';
+ALTER TABLE MatchSessions ADD COLUMN GameMode TEXT NOT NULL DEFAULT 'UNKNOWN';
+ALTER TABLE MatchSessions ADD COLUMN MapNumber INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE MatchSessions ADD COLUMN PlayerKey TEXT NOT NULL DEFAULT '';
+ALTER TABLE MatchSessions ADD COLUMN Champion TEXT NOT NULL DEFAULT '';
+ALTER TABLE MatchSessions ADD COLUMN Position TEXT NOT NULL DEFAULT '';
+ALTER TABLE MatchSessions ADD COLUMN FirstGameTime REAL NOT NULL DEFAULT 0;
+ALTER TABLE MatchSessions ADD COLUMN LastGameTime REAL NOT NULL DEFAULT 0;
+ALTER TABLE MatchSessions ADD COLUMN LastSeenUtc TEXT NULL;
+ALTER TABLE MatchSessions ADD COLUMN Result TEXT NOT NULL DEFAULT 'Unknown';
+ALTER TABLE MatchSessions ADD COLUMN HasGaps INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE MatchSessions ADD COLUMN EventsIncomplete INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE MatchSamples ADD COLUMN WardScore REAL NULL;
+ALTER TABLE MatchSamples ADD COLUMN ItemsJson TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE MatchSamples ADD COLUMN IsDead INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE MatchSamples ADD COLUMN CurrentHealth REAL NULL;
+ALTER TABLE MatchSamples ADD COLUMN MaxHealth REAL NULL;
+-- Remove raw identities from legacy payloads; preserve event timestamps and names.
+UPDATE MatchEvents SET EventJson='{}';
+CREATE TABLE LocalSettings (Name TEXT PRIMARY KEY, Value TEXT NOT NULL);
+INSERT INTO LocalSettings VALUES('PlayerKeySalt', lower(hex(randomblob(32))));
+CREATE INDEX IX_MatchSessions_Review ON MatchSessions(PlayerKey,GameMode,MapNumber,Status,EndedUtc);
+CREATE INDEX IX_MatchSessions_LastSeen ON MatchSessions(LastSeenUtc);

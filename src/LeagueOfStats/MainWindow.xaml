@@ -1,0 +1,124 @@
+<Window x:Class="LeagueOfStats.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LeagueOfStats" Width="1000" Height="700" MinWidth="720" MinHeight="540"
+        Background="#101B2A" Foreground="#E7EDF5">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="24">
+      <TextBlock Text="LeagueOfStats" FontSize="28" FontWeight="Bold"/>
+      <TextBlock Text="Monitor local · jugador activo y aliados" Margin="0,4,0,20"/>
+      <TextBlock Text="ÚLTIMA PARTIDA" FontSize="16" FontWeight="SemiBold" Foreground="#8AC9F3"/>
+      <TextBlock Text="{Binding LastMatch.Status}" TextWrapping="Wrap" Margin="0,6,0,8"/>
+      <Border DataContext="{Binding LastMatch.Card}" Background="#17263A" BorderBrush="#2E4A65"
+              BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,0,20">
+        <Border.Style>
+          <Style TargetType="Border">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <StackPanel>
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="112"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <Border Width="96" Height="96" HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Background="#0D1725" BorderBrush="#42749D" BorderThickness="1" CornerRadius="6" ToolTip="{Binding Champion}">
+              <Grid>
+                <TextBlock Text="?" FontSize="40" Foreground="#54728D" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Image Source="{Binding ChampionImageUrl}" Stretch="Uniform" ImageFailed="OnCatalogImageFailed"
+                       AutomationProperties.Name="{Binding Champion}"/>
+              </Grid>
+            </Border>
+            <StackPanel Grid.Column="1">
+              <TextBlock Text="{Binding Champion}" FontSize="26" FontWeight="Bold" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding Result}" FontSize="17" FontWeight="SemiBold" Margin="0,3">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="#F4CA83"/>
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Result}" Value="Victoria"><Setter Property="Foreground" Value="#72D9B2"/></DataTrigger>
+                      <DataTrigger Binding="{Binding Result}" Value="Derrota"><Setter Property="Foreground" Value="#F69B9B"/></DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
+              <TextBlock Text="{Binding Details}" Foreground="#BCCCDC" TextWrapping="Wrap"/>
+              <WrapPanel Margin="0,10,0,0">
+                <TextBlock Text="{Binding Kda}" FontSize="18" FontWeight="SemiBold" Margin="0,0,24,6"/>
+                <TextBlock Text="{Binding Farming}" FontSize="18" Margin="0,0,0,6"/>
+              </WrapPanel>
+              <TextBlock Text="{Binding Economy}" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding Vision}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+            </StackPanel>
+          </Grid>
+          <TextBlock Text="{Binding InventoryNote}" Foreground="#BCCCDC" Margin="0,16,0,8"/>
+          <ItemsControl ItemsSource="{Binding Items}">
+            <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Width="112" Padding="8" Margin="0,0,8,8" Background="#0D1725" CornerRadius="6" ToolTip="{Binding Caption}">
+                  <StackPanel>
+                    <Grid Width="42" Height="42">
+                      <TextBlock Text="?" Foreground="#54728D" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                      <Image Source="{Binding ImageUrl}" ImageFailed="OnCatalogImageFailed" Stretch="Uniform"
+                             AutomationProperties.Name="{Binding Caption}"/>
+                    </Grid>
+                    <TextBlock Text="{Binding Caption}" TextWrapping="Wrap" TextAlignment="Center" FontSize="12" Margin="0,6,0,0"/>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Text="{Binding CaptureNote}" Foreground="#BCCCDC" TextWrapping="Wrap" Margin="0,6,0,0"/>
+          <TextBlock Text="{Binding AssetsNote}" Foreground="#95ABC2" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+        </StackPanel>
+      </Border>
+      <TextBlock Text="PARTIDA EN VIVO" FontSize="16" FontWeight="SemiBold" Foreground="#8AC9F3" Margin="0,0,0,8"/>
+      <TextBlock Text="{Binding Live.Status}" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding Live.ActivePlayer}" FontSize="20" FontWeight="SemiBold" Margin="0,12,0,0" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding Live.Stats}" Margin="0,8,0,16" FontSize="18"/>
+      <TextBlock Text="Tu equipo (incluyéndote)" FontSize="18" Margin="0,0,0,8"/>
+      <DataGrid ItemsSource="{Binding Live.TeamPlayers}" AutoGenerateColumns="False" IsReadOnly="True"
+                CanUserAddRows="False" CanUserDeleteRows="False" HeadersVisibility="Column" MinHeight="180"
+                Foreground="#152135" Background="#F1F5FA" BorderThickness="0" GridLinesVisibility="Horizontal">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Jugador" Binding="{Binding Name}" Width="180"/>
+          <DataGridTextColumn Header="Campeón" Binding="{Binding Player.Champion}" Width="100"/>
+          <DataGridTextColumn Header="Posición" Binding="{Binding Player.Position}" Width="90"/>
+          <DataGridTextColumn Header="Nivel" Binding="{Binding Player.Level}" Width="50"/>
+          <DataGridTextColumn Header="K/D/A" Binding="{Binding Kda}" Width="70"/>
+          <DataGridTextColumn Header="CS" Binding="{Binding Player.CreepScore}" Width="50"/>
+          <DataGridTextColumn Header="Estado" Binding="{Binding State}" Width="65"/>
+          <DataGridTextColumn Header="Objetos" Binding="{Binding Items}" Width="*" MinWidth="160"/>
+        </DataGrid.Columns>
+      </DataGrid>
+      <Separator Margin="0,20"/>
+      <StackPanel DataContext="{Binding Review}">
+        <TextBlock Text="Revisión posterior a la partida" FontSize="20" FontWeight="SemiBold"/>
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8"/>
+        <ComboBox ItemsSource="{Binding Matches}" SelectedItem="{Binding Selected}" DisplayMemberPath="Label"
+                  Foreground="#152135" MinHeight="30"/>
+        <WrapPanel Margin="0,10">
+          <Button Content="Actualizar historial" Click="RefreshReview" Padding="12,6" Margin="0,0,8,0"/>
+          <Button Content="Generar resumen y comparación" Click="GenerateReview" Padding="12,6" Margin="0,0,8,0"/>
+          <Button Content="Exportar para IA…" Click="ExportReview" Padding="12,6"/>
+        </WrapPanel>
+        <TextBlock Text="{Binding Summary}" TextWrapping="Wrap"/>
+        <TextBlock Text="Solo se comparan capturas completas del mismo jugador, modo y mapa. La cola exacta (normal o clasificatoria) no está disponible. El archivo exportado contiene instrucciones y datos para adjuntarlo a una IA." TextWrapping="Wrap" Margin="0,8"/>
+      </StackPanel>
+      <Separator Margin="0,20"/>
+      <TextBlock Text="{Binding Catalog.Status}" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding Notes.Status}" TextWrapping="Wrap" Margin="0,8"/>
+      <WrapPanel Margin="0,12">
+        <Button Content="Mostrar / ocultar overlay" Click="ToggleOverlay" Padding="12,6" Margin="0,0,8,8"/>
+        <Button Content="Revisar catálogo" Click="RefreshPatch" Padding="12,6" Margin="0,0,8,8"/>
+        <Button Content="Revisar notas del parche" Click="RefreshNotes" Padding="12,6" Margin="0,0,8,8"/>
+      </WrapPanel>
+      <CheckBox Content="Permitir mover e interactuar con el overlay" Foreground="#E7EDF5"
+                Checked="ToggleOverlayInteraction" Unchecked="ToggleOverlayInteraction" Margin="0,0,0,8"/>
+      <TextBlock x:Name="HotkeyStatus" Text="Registrando atajo global…" TextWrapping="Wrap" Margin="0,0,0,8"/>
+      <TextBlock Text="El overlay aparece al detectar la partida y permite que los clics lleguen al juego. Para moverlo, activa la opción anterior. Compatible con ventana y ventana sin bordes; pantalla completa exclusiva no está garantizada." TextWrapping="Wrap"/>
+    </StackPanel>
+  </ScrollViewer>
+</Window>
+
